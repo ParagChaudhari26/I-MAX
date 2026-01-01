@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import logo from 'url:../images/header_images/logo.png';
 
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLowerMenuOpen, setIsLowerMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Path mapping for navigation items
   const pathMapping = {
@@ -52,6 +56,12 @@ function Header() {
     setIsLowerMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    closeMenus();
+  };
+
   const upperNavItems = [
     'Home', 'About Us', 'Consultation', 'Training Programs', 
     'Ayurveda Treatment', 'Tourism', 'Refund policy', 'Contact us'
@@ -69,9 +79,7 @@ function Header() {
         <div className="flex items-center w-full md:w-auto justify-between">
           {/* Logo with Link */}
           <Link to="/" className="md:mx-[20px] lg:mx-[40px] xl:mx-[80px]">
-            <div className="logo-container w-32 h-10 bg-gray-200 border-2 border-dashed rounded-xl">
-              {/* LOGO DIV */}
-            </div>
+            <img src={logo} alt="Bhagirathi Ayurveda" className="h-12 w-auto" />
           </Link>
           
           {/* Mobile menu button */}
@@ -99,6 +107,31 @@ function Header() {
           <div className="font-medium text-xs sm:text-sm">
             <a href="mailto:bhagirathiayurveda@gmail.com" className="hover:underline">bhagirathiayurveda@gmail.com</a>
           </div>
+          
+          {/* Admin Login/Dashboard Button */}
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <Link 
+                to="/admin/dashboard"
+                className="bg-purple-600 text-white text-xs sm:text-sm py-1.5 px-3 rounded-lg font-medium transition duration-300 hover:bg-purple-700"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-gray-500 text-white text-xs sm:text-sm py-1.5 px-3 rounded-lg font-medium transition duration-300 hover:bg-gray-600"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link 
+              to="/admin/login"
+              className="bg-purple-600 text-white text-xs sm:text-sm py-1.5 px-3 rounded-lg font-medium transition duration-300 hover:bg-purple-700"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
 
@@ -172,6 +205,35 @@ function Header() {
               >
                 Request a Call
               </Link>
+            </div>
+            
+            {/* Admin Login/Dashboard in Mobile */}
+            <div className="mt-4">
+              {isAuthenticated ? (
+                <div className="space-y-2">
+                  <Link 
+                    to="/admin/dashboard"
+                    className="bg-purple-600 text-white text-center py-2 px-4 rounded-lg font-medium block"
+                    onClick={closeMenus}
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-gray-500 text-white text-center py-2 px-4 rounded-lg font-medium block w-full"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  to="/admin/login"
+                  className="bg-purple-600 text-white text-center py-2 px-4 rounded-lg font-medium block"
+                  onClick={closeMenus}
+                >
+                  Admin Login
+                </Link>
+              )}
             </div>
           </div>
         </div>
