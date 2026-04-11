@@ -1,0 +1,9 @@
+export { default as TrainingProgramsManager } from './TrainingProgramsManager';
+export { default as NewsEventsManager } from './NewsEventsManager';
+export { default as TestimonialsManager } from './TestimonialsManager';
+export { default as BlogsManager } from './BlogsManager';
+export { default as BannerMessagesManager } from './BannerMessagesManager';
+export { default as GalleryManager } from './GalleryManager';
+export { default as NotificationsManager } from './NotificationsManager';
+export { default as PrescriptionsManager } from './PrescriptionsManager';
+export { default as PaymentReceiptsManager } from './PaymentReceiptsManager';
