@@ -50,6 +50,9 @@ import UserProfile from "./components/user/UserProfile";
 // Dynamic Banner
 import DynamicBanner from "./components/DynamicBanner";
 
+// Chatbot Widget
+import ChatbotWidget from "./components/ChatbotWidget";
+
 
 // Admin components
 import LoginForm from "./components/admin/LoginForm";
@@ -76,6 +79,7 @@ function PublicLayout({ children }) {
       <Header />
       {children}
       <Footer />
+      <ChatbotWidget />
     </>
   );
 }

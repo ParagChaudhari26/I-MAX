@@ -240,11 +240,7 @@ function Header() {
               )}
             </div>
 
-            <div className="mt-4">
-              <Link to="/request-call" className="bg-green-500 text-white text-center py-2 px-4 rounded-lg font-medium block" onClick={closeMenus}>
-                Request a Call
-              </Link>
-            </div>
+
           </div>
         </div>
       )}
@@ -273,11 +269,7 @@ function Header() {
             </li>
           ))}
         </ul>
-        <div className="ml-2 sm:ml-10 transition duration-300 hover:scale-[1.02]">
-          <Link to="/request-call" className="bg-green-500 text-white text-xs sm:text-sm md:text-base py-1 px-2 sm:py-1.5 sm:px-3 rounded-lg font-medium transition duration-300 hover:bg-green-600 cursor-pointer block">
-            Request a Call
-          </Link>
-        </div>
+
       </nav>
     </div>
   );

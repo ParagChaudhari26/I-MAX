@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #059669;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 5px;
+        }
+        button {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #047857;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .success {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+        .error {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Chatbot API Test</h1>
+        <p>Use this page to test if the backend chatbot API is working correctly.</p>
+
+        <div class="test-section">
+            <h3>1. Test Backend Health</h3>
+            <button onclick="testHealth()">Check Backend Health</button>
+            <div id="health-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Test Chatbot API</h3>
+            <input type="text" id="message-input" placeholder="Enter your message..." value="What is Ayurveda?">
+            <button onclick="testChatbot()">Send Message</button>
+            <div id="chat-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Make sure the backend server is running: <code>cd backend && npm start</code></li>
+                <li>Backend should be accessible at: <strong>http://localhost:5000</strong></li>
+                <li>Click "Check Backend Health" to verify the server is running</li>
+                <li>Click "Send Message" to test the chatbot API</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+
+        async function testHealth() {
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Testing...';
+
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ Backend is running!\n\n' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Backend is not accessible!\n\n' +
+                    'Error: ' + error.message + '\n\n' +
+                    'Make sure to:\n' +
+                    '1. Start the backend: cd backend && npm start\n' +
+                    '2. Check if port 5000 is available\n' +
+                    '3. Verify MongoDB and Redis connections';
+            }
+        }
+
+        async function testChatbot() {
+            const resultDiv = document.getElementById('chat-result');
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+
+            if (!message) {
+                alert('Please enter a message');
+                return;
+            }
+
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Sending message...';
+
+            try {
+                const response = await fetch(`${API_URL}/api/public/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ Chatbot Response:\n\n' + data.data;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ Error:\n\n' + (data.message || JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Request Failed!\n\n' +
+                    'Error: ' + error.message + '\n\n' +
+                    'Possible issues:\n' +
+                    '1. Backend not running\n' +
+                    '2. CORS configuration issue\n' +
+                    '3. Network connectivity problem\n' +
+                    '4. GEMINI_API_KEY not configured in backend/.env';
+            }
+        }
+    </script>
+</body>
+</html>

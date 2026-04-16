@@ -9,7 +9,7 @@ const ChatbotWidget = () => {
     {
       id: 1,
       type: 'bot',
-      text: 'Namaste! I am your Ayurveda assistant. How can I help you today?',
+      text: 'Hello! 🙏 Welcome to Bhagirathi Ayurveda.\n\nI\'m your AI assistant. I can help you with:\n• Booking appointments\n• Information about our services\n• Training programs\n• General Ayurveda questions\n\nHow can I assist you today?',
     },
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -41,19 +41,45 @@ const ChatbotWidget = () => {
 
     try {
       const response = await chatApi.sendMessage(userMsg.text);
+      
+      // Extract the actual message text from the response
+      let botText = 'I received your message.';
+      if (response?.success && response?.data) {
+        botText = response.data;
+      } else if (response?.data) {
+        botText = response.data;
+      } else if (response?.message) {
+        botText = response.message;
+      } else if (typeof response === 'string') {
+        botText = response;
+      }
+      
       const botMsg = {
         id: Date.now() + 1,
         type: 'bot',
-        text: typeof response === 'string' ? response : (response?.data || 'I received your message.'),
+        text: botText,
       };
       setMessages((prev) => [...prev, botMsg]);
     } catch (error) {
+      // Determine user-friendly error message
+      let errorMessage = 'Sorry, I encountered an error. Please try again.';
+      
+      if (error.code === 'NETWORK_ERROR' || error.code === 'TIMEOUT') {
+        errorMessage = 'Unable to connect to the server. Please check if the backend is running on http://localhost:5000';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error?.message) {
+        errorMessage = error.response.data.error.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           type: 'bot',
-          text: t('chatbot.error'),
+          text: errorMessage,
           isError: true,
         },
       ]);
@@ -67,13 +93,16 @@ const ChatbotWidget = () => {
       {/* Chat window — mounted but CSS-animated */}
       {isOpen && (
         <div
+          className="chatbot-window"
           style={{
             position: 'fixed',
             bottom: '6rem',
             right: '1.5rem',
-            zIndex: 50,
+            zIndex: 9999,
             width: '22rem',
+            maxWidth: 'calc(100vw - 2rem)',
             height: '30rem',
+            maxHeight: 'calc(100vh - 8rem)',
             display: 'flex',
             flexDirection: 'column',
             borderRadius: '1rem',
@@ -127,10 +156,11 @@ const ChatbotWidget = () => {
                   background: msg.type === 'user' ? '#7c3aed' : msg.isError ? '#fef2f2' : '#fff',
                   color: msg.type === 'user' ? '#fff' : msg.isError ? '#991b1b' : '#1f2937',
                   fontSize: '0.82rem',
-                  lineHeight: 1.5,
+                  lineHeight: 1.6,
                   boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                   border: msg.isError ? '1px solid #fecaca' : msg.type === 'bot' ? '1px solid #f3f4f6' : 'none',
                   whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
                 }}>
                   {msg.text}
                 </div>
@@ -191,11 +221,13 @@ const ChatbotWidget = () => {
 
       {/* Floating Button */}
       <button
+        className="chatbot-button"
         onClick={toggleChat}
         title="Chat with AI Assistant"
+        aria-label="Toggle chat with AI assistant"
         style={{
-          position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 50,
-          width: 52, height: 52, borderRadius: '50%', background: '#059669',
+          position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 9999,
+          width: 56, height: 56, borderRadius: '50%', background: '#059669',
           color: '#fff', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 10px 25px rgba(5,150,105,0.4)',
@@ -204,13 +236,30 @@ const ChatbotWidget = () => {
         onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 14px 28px rgba(5,150,105,0.5)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(5,150,105,0.4)'; }}
       >
-        {isOpen ? <FaTimes size={20} /> : <FaRobot size={22} />}
+        {isOpen ? <FaTimes size={20} /> : <FaRobot size={24} />}
       </button>
 
       <style>{`
         @keyframes chatbotBounce {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-5px); }
+        }
+        
+        @media (max-width: 640px) {
+          .chatbot-window {
+            width: calc(100vw - 1rem) !important;
+            height: calc(100vh - 5rem) !important;
+            bottom: 4.5rem !important;
+            right: 0.5rem !important;
+            max-width: none !important;
+          }
+          
+          .chatbot-button {
+            bottom: 1rem !important;
+            right: 1rem !important;
+            width: 52px !important;
+            height: 52px !important;
+          }
         }
       `}</style>
     </>

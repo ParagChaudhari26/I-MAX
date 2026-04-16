@@ -130,12 +130,12 @@ function FAQ() {
   return (
     <div className="min-h-screen bg-[#f8f5f2] py-12 px-4">
       {/* Hero Section */}
-      <div className="max-w-5xl mx-auto text-center mb-16">
-        <h1 className="text-4xl font-bold text-slate-800 mb-4 font-serif">
+      <div className="max-w-5xl mx-auto text-center mb-16 animate-fadeIn">
+        <h1 className="text-4xl font-bold text-slate-800 mb-4 font-serif animate-slideDown">
           {title}
         </h1>
-        <div className="w-16 h-1 bg-teal-300 mx-auto mb-6 rounded-full"></div>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+        <div className="w-16 h-1 bg-teal-300 mx-auto mb-6 rounded-full animate-expandWidth"></div>
+        <p className="text-lg text-slate-600 max-w-2xl mx-auto animate-fadeInUp">
           {subtitle}
         </p>
       </div>
@@ -146,9 +146,10 @@ function FAQ() {
           {faqItems.map((item, index) => (
             <div 
               key={index}
-              className={`bg-white rounded-xl shadow-sm border border-b-green-900 overflow-hidden transition-all duration-300 ${
-                hoveredIndex === index ? 'shadow-md border-teal-100' : ''
+              className={`bg-white rounded-xl shadow-sm border border-b-green-900 overflow-hidden transition-all duration-300 animate-fadeInUp ${
+                hoveredIndex === index ? 'shadow-md border-teal-100 scale-[1.01]' : ''
               }`}
+              style={{ animationDelay: `${index * 0.05}s` }}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
@@ -173,8 +174,8 @@ function FAQ() {
               </button>
               
               {openIndex === index && (
-                <div className="p-5 bg-white border-t border-slate-100">
-                  <p className="text-slate-600 whitespace-pre-line">
+                <div className="p-5 bg-white border-t border-slate-100 animate-slideDown">
+                  <p className="text-slate-600 whitespace-pre-line animate-fadeIn">
                     {typeof item.answer === 'string' ? item.answer : L(item.answer)}
                   </p>
                 </div>
